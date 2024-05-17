@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, RefreshCcw } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import {
   Form,
@@ -22,8 +22,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { acceptMessageSchema } from '@/app/schemas/acceptMessageSchema';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import { ApiResponse } from '@/app/types/apiResponse';
 
 const Dashboard = () => {
   const router = useRouter();
@@ -34,6 +35,11 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
   const [isAcceptingMessage, setIsAcceptingMessage] = useState(user?.isAcceptingMessage);
+
+  useEffect(() => {
+    console.log('User data updated:', user);
+    setIsAcceptingMessage(user?.isAcceptingMessage);
+  }, [user]);
 
   const { toast } = useToast();
 
@@ -55,7 +61,7 @@ const Dashboard = () => {
   const form = useForm<z.infer<typeof acceptMessageSchema>>({
     resolver: zodResolver(acceptMessageSchema),
     defaultValues: {
-      acceptMessages: user?.isAcceptingMessage,
+      acceptMessages: isAcceptingMessage,
     },
   });
 
@@ -80,6 +86,45 @@ const Dashboard = () => {
       setIsSwitchLoading(false);
     }
   }
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(messages.filter((message) => message._id !== messageId));
+  };
+
+  const fetchMessages = useCallback(
+    async (refresh: boolean = false) => {
+      setIsLoading(true);
+      setIsSwitchLoading(false);
+      try {
+        const response = await axios.get<ApiResponse>('/api/get-messages');
+        setMessages(response.data.messages || []);
+        if (refresh) {
+          toast({
+            title: 'Refreshed Messages',
+            description: 'Showing latest messages',
+          });
+        }
+      } catch (error) {
+        console.log(error);
+
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast({
+          title: 'Error',
+          description: axiosError.response?.data.message ?? 'Failed to fetch messages',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+        setIsSwitchLoading(false);
+      }
+    },
+    [setIsLoading, setMessages, toast]
+  );
+
+  // Fetch initial state from the server
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   return (
     <div className='my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl'>
@@ -141,7 +186,7 @@ const Dashboard = () => {
         variant='outline'
         onClick={(e) => {
           e.preventDefault();
-          // fetchMessages(true);
+          fetchMessages(true);
         }}
       >
         {isLoading ? (
@@ -150,19 +195,19 @@ const Dashboard = () => {
           <RefreshCcw className='h-4 w-4' />
         )}
       </Button>
-      {/* <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-6'>
         {messages.length > 0 ? (
           messages.map((message, index) => (
             <MessageCard
               key={message._id}
               message={message}
-              // onMessageDelete={handleDeleteMessage}
+              onMessageDelete={handleDeleteMessage}
             />
           ))
         ) : (
           <p>No messages to display.</p>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };
