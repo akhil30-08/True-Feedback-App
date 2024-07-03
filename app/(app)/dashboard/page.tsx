@@ -25,6 +25,7 @@ import { acceptMessageSchema } from '@/app/schemas/acceptMessageSchema';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { ApiResponse } from '@/app/types/apiResponse';
+import { baseURI } from '@/lib/utils';
 
 const Dashboard = () => {
   const router = useRouter();
@@ -46,8 +47,7 @@ const Dashboard = () => {
   console.log(user);
   console.log(isAcceptingMessage);
 
-  const baseURL = `${window.location.protocol}/${window.location.host}`;
-  const profileURL = `${baseURL}/u/${user?.username}`;
+  const profileURL = `${baseURI}/u/${user?.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileURL);
