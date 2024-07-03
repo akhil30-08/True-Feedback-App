@@ -46,8 +46,8 @@ const Dashboard = () => {
   console.log(user);
   console.log(isAcceptingMessage);
 
-  // const baseURL = `${window.location.protocol}/${window.location.host}`;
-  const profileURL = `http://localhost:3000/u/${user?.username}`;
+  const baseURL = `${window.location.protocol}/${window.location.host}`;
+  const profileURL = `${baseURL}/u/${user?.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileURL);
