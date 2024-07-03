@@ -47,16 +47,18 @@ const Dashboard = () => {
   console.log(isAcceptingMessage);
 
   // const baseURL = `${window.location.protocol}/${window.location.host}`;
-  // const profileURL = `${baseURL}/u/${user?.username}`;
+  const profileURL = `http://localhost:3000/u/${user?.username}`;
 
-  // const copyToClipboard = () => {
-  //   navigator.clipboard.writeText(profileURL);
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(profileURL);
 
-  //   toast({
-  //     title: 'URL Copied!',
-  //     description: 'Profile URL has been copied to clipboard.',
-  //   });
-  // };
+    toast({
+      title: 'URL Copied!',
+      description: 'Profile URL has been copied to clipboard.',
+    });
+
+    router.push(`/user/${user?.username}`);
+  };
 
   const form = useForm<z.infer<typeof acceptMessageSchema>>({
     resolver: zodResolver(acceptMessageSchema),
@@ -132,7 +134,7 @@ const Dashboard = () => {
 
       <div className='mb-4'>
         <h2 className='text-lg font-semibold mb-2'>Copy Your Unique Link</h2>{' '}
-        {/* <div className='flex items-center'>
+        <div className='flex items-center'>
           <input
             type='text'
             value={profileURL}
@@ -140,7 +142,7 @@ const Dashboard = () => {
             className='input input-bordered w-full p-2 mr-3'
           />
           <Button onClick={copyToClipboard}>Copy</Button>
-        </div> */}
+        </div>
       </div>
 
       <div className='mb-4'>
@@ -197,7 +199,7 @@ const Dashboard = () => {
       </Button>
       <div className='mt-4 grid grid-cols-1 md:grid-cols-2 gap-6'>
         {messages.length > 0 ? (
-          messages.map((message, index) => (
+          messages.map((message) => (
             <MessageCard
               key={message._id}
               message={message}

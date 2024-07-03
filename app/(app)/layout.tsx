@@ -6,11 +6,5 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <section>
-      <NavBar />
-      {/* <MessageCard /> */}
-      {children}
-    </section>
-  );
+  return <section>{children}</section>;
 }

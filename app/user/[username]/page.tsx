@@ -20,6 +20,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { suggestMessages } from '@/app/helpers';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import { toast } from '@/components/ui/use-toast';
+import axios from 'axios';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 const SendMessagePage = () => {
   const { username } = useParams();
@@ -31,18 +35,35 @@ const SendMessagePage = () => {
     },
   });
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  //TODO: submit not working as expected
+
   async function onSubmit(values: z.infer<typeof messageSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-    console.log(56);
+    try {
+      setIsLoading(true);
+
+      const response = await axios.post('/api/send-message', { username, content: values.content });
+
+      toast({
+        title: 'Message sent successfully',
+      });
+    } catch (error: any) {
+      console.log(error);
+
+      toast({
+        title: 'Error Occured',
+        description: error.response.data.message,
+      });
+    } finally {
+      setIsLoading(false);
+      form.reset();
+    }
   }
 
   const handleClickSuggest = (message: string) => {
     form.setValue('content', message);
   };
-
-  const messageContent = form.watch('content');
 
   return (
     <section className='w-full flex flex-col items-center p-4'>
@@ -60,13 +81,16 @@ const SendMessagePage = () => {
                   <FormControl>
                     <Input placeholder='Hi.. Who is your crush? ' {...field} />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type='submit'>Send</Button>
+            <div className='flex justify-center'>
+              <Button type='submit' disabled={!form.watch('content')} className='w-20'>
+                {isLoading ? <Loader2 className='w-9 animate-spin' /> : 'Send'}
+              </Button>
+            </div>
           </form>
         </Form>
       </div>

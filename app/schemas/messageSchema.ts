@@ -5,5 +5,4 @@ export const messageSchema = z.object({
     .string()
     .min(1, 'Message cannot be empty')
     .max(300, 'Message cannot be longer than 300 characters'),
-  createdAt: z.date(),
 });

@@ -49,23 +49,21 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
   };
 
   return (
-    <Card className='w-72 md:w-1/4 m-2 bg-slate-800 text-slate-200'>
+    <Card className='card-bordered'>
       <CardHeader>
-        <div className='flex justify-between'>
-          <CardTitle>Card Title</CardTitle>
-
+        <div className='flex justify-between items-center'>
+          <CardTitle>{message.content}</CardTitle>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='destructive' className='text-black float-right'>
-                <X className='w-4 h-4' />
+              <Button variant='destructive'>
+                <X className='w-5 h-5' />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete your account and remove
-                  your data from our servers.
+                  This action cannot be undone. This will permanently delete this message.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -75,15 +73,9 @@ const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-
-        <CardDescription>Card Description</CardDescription>
+        {/* <div className='text-sm'>{dayjs(message.createdAt).format('MMM D, YYYY h:mm A')}</div> */}
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
+      <CardContent></CardContent>
     </Card>
   );
 };
