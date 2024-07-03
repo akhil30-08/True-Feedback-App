@@ -47,7 +47,7 @@ const Dashboard = () => {
   console.log(user);
   console.log(isAcceptingMessage);
 
-  const profileURL = `${baseURI}/u/${user?.username}`;
+  const profileURL = `https://true-feedback-app.vercel.app//u/${user?.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileURL);
